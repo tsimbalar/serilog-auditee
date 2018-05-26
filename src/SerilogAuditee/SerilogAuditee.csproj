@@ -1,7 +1,20 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <Description>TODO</Description>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <Authors>tsimbalar</Authors>
+    <TargetFrameworks>netcoreapp2.0</TargetFrameworks>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AssemblyName>SerilogAuditee</AssemblyName>
+    <PackageId>SerilogAuditee</PackageId>
+    <PackageTags>serilog;audit</PackageTags>
+    <PackageIconUrl>https://serilog.net/images/serilog-nuget.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/tsimbalar/serilog-auditee</PackageProjectUrl>
+    <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <!--<TreatWarningsAsErrors>True</TreatWarningsAsErrors>-->
+    <TreatSpecificWarningsAsErrors />
   </PropertyGroup>
 
   <ItemGroup>
