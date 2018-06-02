@@ -8,72 +8,92 @@ namespace SerilogAuditee.Sample
     {
         static void Main(string[] args)
         {
-            var regularLogger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .WriteTo.Console()
-                .WriteTo.File(@"C:\temp\execution.log")
-                .CreateLogger();
+            Console.WriteLine("Welcome to SerilogAuditee Sample App");
+            Console.WriteLine("===================================");
+            Console.WriteLine();
+            Console.WriteLine("Type *something* after the prompt and press *Enter* to have it written to the log (may be postponed).");
+            Console.WriteLine("Start with an exclamation mark to write it to the audit trail (should be immediate or fail).");
+            Console.WriteLine("Press *Enter* to stop the app.");
+            Console.WriteLine();
 
-            Log.Logger = regularLogger;
-            Log.Logger.Information("App is starting ! ");
-
-            var auditLogger = new LoggerConfiguration()
-                    // we want to allow to use existing extension methods
-                    .AuditTo.File(@"C:\temp\audit.log",
-                        outputTemplate:"{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] {Message}{NewLine}{Exception}{Properties:j}{NewLine}")
-                    // we may not want to allow WriteTo ... or only if requested explicitely ????
-                    .WriteTo.Console(outputTemplate:"{Audit:u}[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
-                    .CreateAuditLogger() // todo : ensure this is actually writing somewhere !
-                // possible options : "strict" : there must be an audit sink
-                // write errors to a logger somewhere ... onError or something !
-                ;
-
-            Audit.Auditee = auditLogger;
+            ConfigureLogging();
 
             Log.Logger.Information("App is started");
-
-            var appComponent = new AppComponent(args);
-
-            var userInput = Console.ReadLine();
-            while ( userInput!=null && userInput.Trim().Length > 0)
+            try
             {
-                appComponent.ProcessLine(userInput);
-                userInput = Console.ReadLine();
+                DoMain(args);
             }
-            Log.Logger.Information("App is ending !");
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "An unhandled error occurred. The app is crashing :-( ");
+                throw;
+            }
+            finally
+            {
+                Log.Logger.Information("App is ending ...");
 
-            Log.CloseAndFlush();
-            Audit.CloseAndFlush();
+                Log.Logger.Debug("Flushing Log ...");
+                Log.CloseAndFlush();
+                Log.Logger.Debug("Flushing Audit ...");
+                Audit.CloseAndFlush();
+
+                Log.Logger.Information("App is terminated !");
+            }
 
             if (Debugger.IsAttached)
             {
-                Console.WriteLine("App is terminated but terminal is still there in debug mode. Press any key to close it ...");
+                Console.WriteLine("[DEBUGGER ATTACHED] App is terminated. Press any key to close it ...");
                 Console.ReadKey();
             }
-
-        }
-    }
-
-    class AppComponent
-    {
-        static readonly ILogger logger = Log.ForContext<AppComponent>();
-        static readonly IAuditee auditee = Audit.ForContext<AppComponent>();
-
-        public AppComponent(string[] args)
-        {
         }
 
-        public void ProcessLine(string userInput)
+        static void DoMain(string[] args)
         {
-            if (userInput.StartsWith("!"))
+            var appComponent = new AppComponent(args);
+
+            var userInput = Prompt();
+            while (userInput != null && userInput.Trim().Length > 0)
             {
-                logger.Debug("Important message detected ... writing to Audit trail ! {UserInput}", userInput);
-                auditee.Information("User has typed {UserInput}", userInput);
+                appComponent.ProcessLine(userInput);
+                userInput = Prompt();
             }
-            else
-            {
-                logger.Information("User has typed {UserInput}", userInput);
-            }
+        }
+
+        static void ConfigureLogging()
+        {
+            var logLocation = @"C:\temp\execution.log";
+            var auditLocation = @"C:\temp\audit.log";
+            Console.WriteLine($"Logs are written to \"{logLocation}\" + Console");
+            Console.WriteLine($"Audit are written to \"{auditLocation}\" + Console");
+
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.Console(outputTemplate: "[NOT AUDIT][{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}{Properties:j}{NewLine}")
+                .WriteTo.File(logLocation)
+                .CreateLogger();
+
+            Log.Logger.Debug("Logging is configured");
+
+            Audit.Logger = new AuditConfiguration()
+                // we want to allow to use existing extension methods
+                .AuditTo.Sink(sink => sink
+                    .File(auditLocation,
+                        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] {Message}{NewLine}{Exception}{Properties:j}{NewLine}")
+                )
+                // we may not want to allow WriteTo ... or only if requested explicitely ????
+                .WriteTo.Sink(sink => sink
+                    .Console(outputTemplate: "[AUDIT][{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}{Properties:j}{NewLine}")
+                )
+                .CreateAuditLogger();
+
+            Log.Logger.Debug("Audit trail is configured");
+        }
+
+        static string Prompt()
+        {
+            Console.Write(">");
+            return Console.ReadLine();
         }
     }
 }

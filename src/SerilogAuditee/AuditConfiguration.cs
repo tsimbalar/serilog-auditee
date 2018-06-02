@@ -1,17 +1,64 @@
-﻿using Serilog;
+﻿using System;
+using System.Collections.Generic;
+using Serilog;
+using Serilog.Configuration;
+using SerilogAuditee.Configuration;
+using SerilogAuditee.Core;
 
 namespace SerilogAuditee
 {
-    class AuditConfiguration
+    public class AuditConfiguration
     {
-    }
+        const string AuditTypeEnrichedPropertyName = "AuditType";
+        const string AuditTypeEnrichedPropertyDefaultValue = "Audit";
 
-    public static class AuditLoggerExtensions
-    {
-        public static IAuditee CreateAuditLogger(this LoggerConfiguration loggerConfiguration)
+        List<Func<LoggerConfiguration, LoggerConfiguration>> _customizations = new List<Func<LoggerConfiguration, LoggerConfiguration>>();
+
+        public AuditConfiguration()
         {
-            // possibly add some stuff here to ensure there is some auditing in there !
-            return new AuditLogger(loggerConfiguration.CreateLogger().ForContext("Audit", "audit"));
+            AuditTo = new AuditToSinkConfiguration(this);
+            WriteTo = new WriteToSinkConfiguration(this);
+        }
+
+        public AuditToSinkConfiguration AuditTo { get; }
+
+        public WriteToSinkConfiguration WriteTo { get; }
+
+        public IAuditLogger CreateAuditLogger()
+        {
+            var innerConfiguration = new LoggerConfiguration()
+                    .MinimumLevel.Information()
+                    .Enrich.WithProperty(AuditTypeEnrichedPropertyName, AuditTypeEnrichedPropertyDefaultValue)
+                // stuff that will always happen :
+                // - enrich with property AuditEvent
+                // - minimumLevel = Information
+                ;
+
+            innerConfiguration = ApplyCustomizations(innerConfiguration);
+
+            return new AuditLogger(innerConfiguration.CreateLogger());
+        }
+
+        LoggerConfiguration ApplyCustomizations(LoggerConfiguration innerConfiguration)
+        {
+            var result = innerConfiguration;
+            foreach (var customization in _customizations)
+            {
+                result = customization(result);
+            }
+
+            return result;
+        }
+
+        internal void AddAuditSink(Func<LoggerAuditSinkConfiguration, LoggerConfiguration> configureAuditTo)
+        {
+            _customizations.Add(initial => configureAuditTo(initial.AuditTo));
+        }
+
+
+        internal void AddSink(Func<LoggerSinkConfiguration, LoggerConfiguration> configureWriteTo)
+        {
+            _customizations.Add(initial => configureWriteTo(initial.WriteTo));
         }
     }
 }
