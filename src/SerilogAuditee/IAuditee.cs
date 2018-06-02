@@ -99,5 +99,9 @@ namespace SerilogAuditee
         [MessageTemplateFormatMethod("messageTemplate")]
         void Write(LogEventLevel level, Exception exception, string messageTemplate, params object[] propertyValues);
 
+        [MessageTemplateFormatMethod("messageTemplate")]
+        void Information<T>(string messageTemplate, T propertyValue);
+
+        IAuditee ForContext<T>();
     }
 }

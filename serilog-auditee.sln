@@ -7,9 +7,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{403A1823-A0C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{151B3089-87F5-4DE1-8F6E-F298FB6F385C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerilogAuditee", "src\SerilogAuditee\SerilogAuditee.csproj", "{F2F09219-DF35-4758-8D62-B1F8C794012B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SerilogAuditee", "src\SerilogAuditee\SerilogAuditee.csproj", "{F2F09219-DF35-4758-8D62-B1F8C794012B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerilogAuditee.Tests", "test\SerilogAuditee.Tests\SerilogAuditee.Tests.csproj", "{93BAF77F-4C8C-4C54-AC4B-BEDD0B71A44F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SerilogAuditee.Tests", "test\SerilogAuditee.Tests\SerilogAuditee.Tests.csproj", "{93BAF77F-4C8C-4C54-AC4B-BEDD0B71A44F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sample", "sample", "{51923387-BCFF-4487-B778-8388B24870FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerilogAuditee.Sample", "sample\SerilogAuditee.Sample\SerilogAuditee.Sample.csproj", "{B87A4BAE-32A7-4384-8677-8D33635405B1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,6 +29,10 @@ Global
 		{93BAF77F-4C8C-4C54-AC4B-BEDD0B71A44F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{93BAF77F-4C8C-4C54-AC4B-BEDD0B71A44F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{93BAF77F-4C8C-4C54-AC4B-BEDD0B71A44F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B87A4BAE-32A7-4384-8677-8D33635405B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B87A4BAE-32A7-4384-8677-8D33635405B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B87A4BAE-32A7-4384-8677-8D33635405B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B87A4BAE-32A7-4384-8677-8D33635405B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,6 +40,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{F2F09219-DF35-4758-8D62-B1F8C794012B} = {403A1823-A0C9-4C09-9A23-5E012C85BF32}
 		{93BAF77F-4C8C-4C54-AC4B-BEDD0B71A44F} = {151B3089-87F5-4DE1-8F6E-F298FB6F385C}
+		{B87A4BAE-32A7-4384-8677-8D33635405B1} = {51923387-BCFF-4487-B778-8388B24870FA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB1D97DD-7676-446A-82DD-AEA7AD45756F}

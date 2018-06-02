@@ -1,14 +1,20 @@
 using System;
 using Serilog;
+using Serilog.Core;
 using Serilog.Events;
 
 namespace SerilogAuditee
 {
     sealed class AuditLogger : IAuditee
     {
+        readonly ILogger _wrapped;
+
         public AuditLogger(ILogger wrapped)
         {
+            _wrapped = wrapped ?? throw new ArgumentNullException(nameof(wrapped));
         }
+
+        internal static IAuditee None { get; } = new AuditLogger(Logger.None);
 
         public void Write(LogEvent logEvent)
         {
@@ -76,9 +82,20 @@ namespace SerilogAuditee
             throw new NotImplementedException();
         }
 
+        public void Information<T>(string messageTemplate, T propertyValue)
+        {
+            _wrapped.Information(messageTemplate, propertyValue);
+        }
+
+        public IAuditee ForContext<T>()
+        {
+            return new AuditLogger(_wrapped.ForContext<T>());
+        }
+
         private static void EnsureConfigurationIsInitialized()
         {
             throw new AuditeeConfigurationNotInitializedException();
         }
     }
 }
+
